@@ -43,19 +43,31 @@ bot.start(async (ctx) => {
     console.log(`👤 [START] Usuário ${ctx.from.id} iniciou o bot`);
     
     const userId = ctx.from.id;
-    let user;
+    const firstName = ctx.from.first_name || 'usuário';
     
-    try {
-      if (db && db.getOrCreateUser) {
-        user = await db.getOrCreateUser(ctx.from);
-        console.log('✅ [START] Usuário criado/atualizado no banco');
-      }
-    } catch (userErr) {
-      console.error('⚠️ [START] Erro ao criar usuário:', userErr.message);
-      // Continuar mesmo se falhar
+    // Tentar criar usuário em background (não bloquear resposta)
+    if (db && db.getOrCreateUser) {
+      setImmediate(async () => {
+        try {
+          // Timeout de 3 segundos para não travar
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), 3000)
+          );
+          
+          await Promise.race([
+            db.getOrCreateUser(ctx.from),
+            timeoutPromise
+          ]);
+          console.log('✅ [START] Usuário criado/atualizado no banco');
+        } catch (userErr) {
+          console.error('⚠️ [START] Erro ao criar usuário (não crítico):', userErr.message);
+          // Não é crítico, continuar
+        }
+      });
     }
     
-    const message = `👋 *Olá, ${ctx.from.first_name || 'usuário'}!*\n\n` +
+    // ENVIAR MENSAGEM IMEDIATAMENTE (não esperar banco)
+    const message = `👋 *Olá, ${firstName}!*\n\n` +
       `Bem-vindo ao *Valzinha VIP Bot*! 🔥\n\n` +
       `Aqui você pode assinar grupos exclusivos com planos flexíveis:\n\n` +
       `📅 *Semanal* - Teste por 7 dias\n` +
@@ -69,20 +81,23 @@ bot.start(async (ctx) => {
       [{ text: '💬 Suporte', callback_data: 'support' }]
     ];
     
-    return await ctx.reply(message, {
+    const sentMessage = await ctx.reply(message, {
       parse_mode: 'Markdown',
       reply_markup: {
         inline_keyboard: buttons
       }
     });
     
+    console.log('✅ [START] Mensagem enviada com sucesso!');
+    return sentMessage;
+    
   } catch (err) {
     console.error('❌ [START] Erro completo:', err);
     console.error('Stack:', err.stack);
     
-    // Fallback simples
+    // Fallback simples - SEMPRE enviar algo
     try {
-      return await ctx.reply(
+      const fallbackMessage = await ctx.reply(
         '👋 Olá! Bem-vindo ao Valzinha VIP Bot! 🔥\n\n' +
         'Use os botões abaixo para navegar:\n\n' +
         '👥 Ver Grupos\n' +
@@ -98,8 +113,16 @@ bot.start(async (ctx) => {
           }
         }
       );
+      console.log('✅ [START] Mensagem fallback enviada');
+      return fallbackMessage;
     } catch (fallbackErr) {
-      console.error('❌ [START] Erro no fallback:', fallbackErr);
+      console.error('❌ [START] Erro até no fallback:', fallbackErr);
+      // Última tentativa - mensagem sem formatação
+      try {
+        return await ctx.reply('👋 Olá! Bem-vindo ao Valzinha VIP Bot! 🔥');
+      } catch (finalErr) {
+        console.error('❌ [START] Erro final:', finalErr);
+      }
     }
   }
 });

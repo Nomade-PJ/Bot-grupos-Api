@@ -29,16 +29,35 @@ async function getOrCreateUser(telegramUser) {
   try {
     const { id, username, first_name, language_code } = telegramUser;
     
+    // Verificar se Supabase está configurado
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+      console.warn('⚠️ [DB] Supabase não configurado, retornando usuário mock');
+      return {
+        id: `mock-${id}`,
+        telegram_id: id,
+        username,
+        first_name,
+        language_code
+      };
+    }
+    
+    // Timeout de 5 segundos para não travar
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout ao conectar com Supabase')), 5000)
+    );
+    
     // Buscar usuário existente
-    let { data: user, error } = await supabase
+    const queryPromise = supabase
       .from('users')
       .select('*')
       .eq('telegram_id', id)
       .single();
     
+    let { data: user, error } = await Promise.race([queryPromise, timeoutPromise]);
+    
     // Se não existe, criar
     if (error && error.code === 'PGRST116') {
-      const { data: newUser, error: insertError } = await supabase
+      const insertPromise = supabase
         .from('users')
         .insert([{
           telegram_id: id,
@@ -49,19 +68,21 @@ async function getOrCreateUser(telegramUser) {
         .select()
         .single();
       
+      const { data: newUser, error: insertError } = await Promise.race([insertPromise, timeoutPromise]);
+      
       if (insertError) throw insertError;
       return newUser;
     }
     
     if (error) throw error;
     
-    // OTIMIZAÇÃO #3: Só atualizar se realmente mudou algo
+    // OTIMIZAÇÃO: Só atualizar se realmente mudou algo
     const needsUpdate = 
       user.username !== username || 
       user.first_name !== first_name;
     
     if (needsUpdate) {
-      await supabase
+      const updatePromise = supabase
         .from('users')
         .update({
           username,
@@ -70,6 +91,8 @@ async function getOrCreateUser(telegramUser) {
         })
         .eq('telegram_id', id);
       
+      await Promise.race([updatePromise, timeoutPromise]);
+      
       // Atualizar objeto local
       user.username = username;
       user.first_name = first_name;
@@ -77,8 +100,15 @@ async function getOrCreateUser(telegramUser) {
     
     return user;
   } catch (err) {
-    console.error('Erro get/create user:', err.message);
-    throw err;
+    console.error('⚠️ [DB] Erro get/create user (não crítico):', err.message);
+    // Retornar usuário mock em caso de erro (não travar o bot)
+    return {
+      id: `mock-${telegramUser.id}`,
+      telegram_id: telegramUser.id,
+      username: telegramUser.username,
+      first_name: telegramUser.first_name,
+      language_code: telegramUser.language_code
+    };
   }
 }
 
