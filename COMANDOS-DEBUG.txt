@@ -1,0 +1,49 @@
+═══════════════════════════════════════════════════════════════════════
+  🚨 COMANDOS PARA DEBUG - COLE NO NAVEGADOR
+═══════════════════════════════════════════════════════════════════════
+
+1️⃣ VERIFICAR WEBHOOK ATUAL:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+https://api.telegram.org/bot7745607430:AAG50YYIMbZ8FPzkQDGO8CBSIDK1-CcnFT0/getWebhookInfo
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+2️⃣ CONFIGURAR WEBHOOK (COLE COMPLETO):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+https://api.telegram.org/bot7745607430:AAG50YYIMbZ8FPzkQDGO8CBSIDK1-CcnFT0/setWebhook?url=https://bot-grupos-api.vercel.app/webhook-telegram
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+3️⃣ TESTAR ENDPOINT NA VERCEL:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+https://bot-grupos-api.vercel.app/api/test
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+4️⃣ TESTAR WEBHOOK DIRETAMENTE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+https://bot-grupos-api.vercel.app/webhook-telegram
+
+(Deve dar erro, mas não 404)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+5️⃣ DESCONFIGURAR WEBHOOK (para limpar):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+https://api.telegram.org/bot7745607430:AAG50YYIMbZ8FPzkQDGO8CBSIDK1-CcnFT0/deleteWebhook
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+6️⃣ RECONFIGURAR WEBHOOK (depois de limpar):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+https://api.telegram.org/bot7745607430:AAG50YYIMbZ8FPzkQDGO8CBSIDK1-CcnFT0/setWebhook?url=https://bot-grupos-api.vercel.app/webhook-telegram
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+═══════════════════════════════════════════════════════════════════════
+
