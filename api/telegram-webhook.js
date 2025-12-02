@@ -274,21 +274,34 @@ bot.catch((err, ctx) => {
 
 module.exports = async (req, res) => {
   try {
-    // Vercel Serverless Functions requer resposta rápida
-    res.status(200).send('OK');
+    // Aceitar apenas POST
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Method Not Allowed' });
+    }
     
-    // Processar update do Telegram em background
-    setImmediate(async () => {
-      try {
-        await bot.handleUpdate(req.body);
-      } catch (err) {
-        console.error('❌ [WEBHOOK] Erro ao processar update:', err);
-      }
-    });
+    console.log('📥 [WEBHOOK] Update recebido do Telegram');
+    console.log(`📋 [WEBHOOK] Update ID: ${req.body?.update_id || 'N/A'}`);
+    
+    if (req.body?.message) {
+      console.log(`👤 [WEBHOOK] From: ${req.body.message.from?.id} (@${req.body.message.from?.username || 'N/A'})`);
+      console.log(`📝 [WEBHOOK] Text: ${req.body.message.text || 'N/A'}`);
+    }
+    
+    // Processar update do Telegram
+    try {
+      await bot.handleUpdate(req.body);
+      console.log('✅ [WEBHOOK] Update processado com sucesso');
+    } catch (updateError) {
+      console.error('❌ [WEBHOOK] Erro ao processar update:', updateError);
+      // Não retornar erro para não quebrar o webhook
+    }
+    
+    // Resposta rápida para o Telegram
+    return res.status(200).json({ ok: true });
     
   } catch (err) {
-    console.error('❌ [WEBHOOK] Erro:', err);
-    res.status(500).send('Error');
+    console.error('❌ [WEBHOOK] Erro crítico:', err);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
