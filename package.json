@@ -1,0 +1,33 @@
+{
+  "name": "valzinha-grupos-bot",
+  "version": "1.0.0",
+  "description": "Bot de gerenciamento de grupos VIP com planos flexíveis (Semanal, Mensal, Trimestral)",
+  "main": "src/bot.js",
+  "scripts": {
+    "start": "node src/bot.js",
+    "dev": "nodemon src/bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "grupos",
+    "assinaturas",
+    "pix"
+  ],
+  "author": "Carlos",
+  "license": "MIT",
+  "dependencies": {
+    "telegraf": "^4.16.3",
+    "@supabase/supabase-js": "^2.39.0",
+    "qrcode": "^1.5.3",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+
