@@ -1,7 +1,6 @@
 // src/groupControl.js
-const db = require('./database');
-const manualPix = require('./pix/manual');
-const deliver = require('./deliver');
+const db = require('../database');
+const manualPix = require('../pix/manual');
 
 async function checkExpirations(bot) {
   try {
